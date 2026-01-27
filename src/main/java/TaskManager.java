@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 
 /**
- * A simple task manager that maintains a list of tasks as strings. Provides
- * functionality to add tasks and display all tasks in a numbered list.
+ * A task manager that maintains a list of tasks
  */
 public class TaskManager {
 
-    private ArrayList<String> tasks;
+    private ArrayList<Task> tasks;
 
     /**
      * Constructs a new TaskManager with an empty task list.
@@ -25,7 +24,60 @@ public class TaskManager {
             return;
         }
 
-        tasks.add(item);
+        this.tasks.add(new Task(item));
+    }
+
+    /**
+     * Retrieves a task at the specified index from the task list.
+     *
+     * @param index the zero-based index of the task to retrieve
+     * @return the Task object at the specified index, or null if the index is out
+     *         of bounds or the task list is empty
+     */
+    public Task getTask(int index) {
+        if (this.tasks.size() == 0) {
+            return null;
+        }
+
+        if (index < 0 || index >= this.tasks.size()) {
+            return null;
+        }
+
+        return this.tasks.get(index);
+    }
+
+    /**
+     * Marks a task at the specified index as completed.
+     * 
+     * @param index the zero-based index of the task to mark as completed
+     * @return the task that was marked as completed, or null if the index is
+     *         invalid or the task does not exist
+     */
+    public Task markCompleted(int index) {
+        Task task = this.getTask(index);
+        if (task == null) {
+            return null;
+        }
+
+        task.markCompleted();
+        return task;
+    }
+
+    /**
+     * Marks a task at the specified index as incomplete.
+     * 
+     * @param index the zero-based index of the task to mark as incomplete
+     * @return the task that was marked as incomplete, or null if the index is
+     *         invalid
+     */
+    public Task markIncomplete(int index) {
+        Task task = this.getTask(index);
+        if (task == null) {
+            return null;
+        }
+
+        task.markIncomplete();
+        return task;
     }
 
     /**
