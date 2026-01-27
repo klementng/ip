@@ -1,0 +1,5 @@
+{
+  "java.format.settings.url": ".vscode/java-formatter.xml",
+  "java.gradle.buildServer.enabled": "off",
+  "java.import.gradle.java.home": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot"
+}
