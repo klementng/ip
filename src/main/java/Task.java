@@ -39,6 +39,7 @@ public class Task {
      * @return a formatted string showing the completion status and description of
      *         the task
      */
+    @Override
     public String toString() {
         return String.format("[%s] %s", this.isCompleted ? "X" : " ", this.description);
     }
