@@ -51,7 +51,7 @@ public class Pixie {
 
                 } else {
 
-                    task = manager.markCompleted(index);
+                    task = manager.markIncomplete(index);
 
                     if (task == null) {
                         System.out.println("Invalid Task Number entered!");
