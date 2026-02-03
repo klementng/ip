@@ -32,6 +32,49 @@ public class Pixie {
                 System.out.printf("Got it! added: %s \n", item);
                 System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
 
+            } else if (command.equals("event")) {
+                if (args.length < 5) {
+                    System.out.println("Invalid number of arguments! Minimum 5 expected");
+                    continue;
+                }
+
+                String desc = "";
+                String to = "";
+                String from = "";
+
+                int parseType = 0;
+
+                for (int i = 1; i < args.length; i++) {
+                    if (args[i].equalsIgnoreCase("/from")) {
+                        parseType = 1;
+                        continue;
+                    }
+
+                    if (args[i].equalsIgnoreCase("/to")) {
+                        parseType = 2;
+                        continue;
+                    }
+
+                    if (parseType == 0) {
+                        desc += args[i];
+                    } else if (parseType == 1) {
+                        from += args[i];
+                    } else {
+                        to += args[i];
+                    }
+
+                }
+
+                if (to.equals("") || from.equals("")) {
+                    System.out.println("Invalid format given");
+                    continue;
+                }
+
+                Task item = new Event(desc, from, to);
+                manager.addTask(item);
+                System.out.printf("Got it! added: %s \n", item);
+                System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
+
             } else if (command.equals("deadline")) {
                 if (args.length < 4) {
                     System.out.println("Invalid number of arguments! Minimum 4 expected");
