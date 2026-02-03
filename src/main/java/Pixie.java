@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Pixie {
@@ -21,15 +22,24 @@ public class Pixie {
             if (command.equals("bye")) {
                 System.out.println("Bye. Hope to see you again soon!");
                 break;
+            } else if (command.equals("todo")) {
+                if (args.length < 2) {
+                    System.out.println("Invalid number of arguments! Minimum 2 expected");
+                    continue;
+                }
+                Task item = new Todo(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                manager.addTask(item);
+                System.out.printf("Got it! added: %s \n", item);
+                System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
+
             } else if (command.equals("list")) {
                 manager.printTasks();
-            } else if (command.equals("mark") || command.equals("unmark")) {
 
+            } else if (command.equals("mark")) {
                 if (args.length != 2) {
                     System.out.println("Invalid number of arguments! Expected 2");
                     continue;
                 }
-
                 int index;
                 Task task;
 
@@ -39,31 +49,40 @@ public class Pixie {
                     System.out.println("Index entered is not a number!");
                     continue;
                 }
+                task = manager.markCompleted(index);
 
-                if (command.equals("mark")) {
-                    task = manager.markCompleted(index);
-
-                    if (task == null) {
-                        System.out.println("Invalid Task Number entered!");
-                        continue;
-                    }
-                    System.out.printf("Nice! I've marked this task as done: %s\n", task);
-
-                } else {
-
-                    task = manager.markIncomplete(index);
-
-                    if (task == null) {
-                        System.out.println("Invalid Task Number entered!");
-                        continue;
-                    }
-                    System.out.printf("OK, I've marked this task as not done yet: %s\n", task);
-
+                if (task == null) {
+                    System.out.println("Invalid Task Number entered!");
+                    continue;
                 }
+                System.out.printf("Nice! I've marked this task as done: %s\n", task);
 
-            } else {
-                System.out.printf("added: %s ", text);
-                manager.addTask(text);
+            } else if (command.equals("unmark")) {
+
+                if (args.length != 2) {
+                    System.out.println("Invalid number of arguments! Expected 2");
+                    continue;
+                }
+                int index;
+                Task task;
+
+                try {
+                    index = Integer.parseInt(args[1]) - 1;
+                } catch (NumberFormatException e) {
+                    System.out.println("Index entered is not a number!");
+                    continue;
+                }
+                task = manager.markIncomplete(index);
+
+                if (task == null) {
+                    System.out.println("Invalid Task Number entered!");
+                    continue;
+                }
+                System.out.printf("OK, I've marked this task as not done yet: %s\n", task);
+            }
+
+            else {
+                System.out.printf("Please enter a valid command!");
             }
         }
     }

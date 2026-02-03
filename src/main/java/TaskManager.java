@@ -19,12 +19,25 @@ public class TaskManager {
      * 
      * @param item the task description to be added
      */
-    public void addTask(String item) {
+    public void addTodo(String item) {
         if (item == null || item.length() == 0) {
             return;
         }
 
         this.tasks.add(new Task(item));
+    }
+
+    /**
+     * Adds a new task to the task list. Skipped if item is a empty string or null.
+     * 
+     * @param item the task to be added
+     */
+    public void addTask(Task item) {
+        if (item == null) {
+            return;
+        }
+
+        this.tasks.add(item);
     }
 
     /**
@@ -44,6 +57,15 @@ public class TaskManager {
         }
 
         return this.tasks.get(index);
+    }
+
+    /**
+     * Retrieves a the number of item in the list
+     * 
+     * @return size of the task list
+     */
+    public int getTaskCount() {
+        return this.tasks.size();
     }
 
     /**
