@@ -10,7 +10,7 @@ import pixie.ui.Ui;
 
 public class DeleteCommand extends Command {
     public static final String COMMAND_PREFIX = "delete";
-    private static final Pattern ARG_PATTERN = Pattern.compile("^delete\\s+(?<number>d+?)");
+    private static final Pattern ARG_PATTERN = Pattern.compile("^delete\\s+(?<number>\\d+?)");
 
     private int index;
 
