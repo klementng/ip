@@ -1,6 +1,15 @@
-package pixie.task;
+package pixie.helper;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import pixie.exceptions.TaskDeserializationException;
+import pixie.task.Task;
 
 /**
  * A task manager that maintains a list of tasks
@@ -127,4 +136,45 @@ public class TaskManager {
 
     }
 
+    /**
+     * Saves the current list of tasks to a file.
+     *
+     * @param filePath The path to the file.
+     * @throws IOException If the file cannot be written to.
+     */
+    public void save(Path filePath) throws IOException {
+        Files.createDirectories(filePath.getParent());
+
+        FileWriter fw = new FileWriter(filePath.toString());
+        for (Task task : tasks) {
+            fw.write(task.toCSV() + "\n");
+        }
+        fw.close();
+    }
+
+    /**
+     * Loads tasks from a file into the task list.
+     *
+     * @param filePath The path to the file.
+     * @throws IOException If the file cannot be read.
+     */
+    public void load(Path filePath) throws IOException {
+        File f = new File(filePath.toString());
+
+        if (!f.exists())
+            return;
+
+        Scanner s = new Scanner(f);
+        while (s.hasNext()) {
+            String line = s.nextLine();
+            try {
+                Task task = Task.fromCSV(line);
+                this.tasks.add(task);
+
+            } catch (TaskDeserializationException e) {
+                System.err.println("Skipping corrupted line: " + line);
+            }
+        }
+        s.close();
+    }
 }
