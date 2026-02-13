@@ -50,6 +50,29 @@ public class TaskManager {
     }
 
     /**
+     * Delete a task at the specified index from the task list.
+     *
+     * @param index the zero-based index of the task to retrieve
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
+     */
+    public Task deleteTask(int index) throws IndexOutOfBoundsException {
+        if (this.tasks.size() == 0) {
+            throw new IndexOutOfBoundsException("The task list is empty");
+        }
+
+        if (index < 0 || index >= this.tasks.size()) {
+            throw new IndexOutOfBoundsException("Invalid Task index given");
+        }
+
+        Task task = this.tasks.get(index);
+        this.tasks.remove(index);
+
+        return task;
+    }
+
+    /**
      * Retrieves a the number of item in the list
      * 
      * @return size of the task list
