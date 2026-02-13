@@ -4,11 +4,15 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pixie.helper.TaskManager;
 import pixie.task.Deadline;
 import pixie.task.Event;
 import pixie.task.Task;
-import pixie.task.TaskManager;
 import pixie.task.Todo;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Pixie {
 
@@ -17,44 +21,68 @@ public class Pixie {
     private static final Pattern EVENT_ARGS_PATTERN = Pattern
             .compile("(?<desc>.+?)\\s+/from\\s+(?<start>.+?)\\s+/to\\s+(?<end>.+)");
 
+    private static final Path SAVE_PATH = Paths.get("data/", "save.csv");
+
     public static void main(String[] args) {
         TaskManager manager = new TaskManager();
-        Scanner stdin = new Scanner(System.in);
 
-        System.out.println("Hello! I'm Pixie");
-        System.out.println("What can I do for you?");
+        System.err.println(SAVE_PATH.toAbsolutePath());
 
-        while (true) {
-            System.out.print("\n\n>>> ");
-            String input = stdin.nextLine().strip();
+        try {
+            manager.load(SAVE_PATH);
+        } catch (IOException e) {
+            System.err.println("Error occurred while loading save file!");
+        }
 
-            Matcher matcher = COMMAND_PATTERN.matcher(input);
-            if (!matcher.matches()) {
-                System.out.println("Please enter a valid command!");
-                continue;
+        try {
+
+            Scanner stdin = new Scanner(System.in);
+
+            System.out.println("Hello! I'm Pixie");
+            System.out.println("What can I do for you?");
+
+            while (true) {
+                System.out.print("\n\n>>> ");
+                String input = stdin.nextLine().strip();
+
+                Matcher matcher = COMMAND_PATTERN.matcher(input);
+                if (!matcher.matches()) {
+                    System.out.println("Please enter a valid command!");
+                    continue;
+                }
+
+                String command = matcher.group("cmd").toLowerCase();
+                String arguments = matcher.group("args");
+
+                if (command.equalsIgnoreCase("bye")) {
+                    System.out.println("Bye. Hope to see you again soon!");
+                    return;
+                } else if (command.equalsIgnoreCase("list")) {
+                    manager.printTasks();
+                } else if (command.equalsIgnoreCase("todo")) {
+                    handleTodo(manager, arguments);
+                } else if (command.equalsIgnoreCase("deadline")) {
+                    handleDeadline(manager, arguments);
+                } else if (command.equalsIgnoreCase("event")) {
+                    handleEvent(manager, arguments);
+                } else if (command.equalsIgnoreCase("mark")) {
+                    handleMarking(manager, arguments, true);
+                } else if (command.equalsIgnoreCase("unmark")) {
+                    handleMarking(manager, arguments, false);
+                } else {
+                    System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark)");
+                }
             }
 
-            String command = matcher.group("cmd").toLowerCase();
-            String arguments = matcher.group("args");
+        } finally {
 
-            if (command.equalsIgnoreCase("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
-                return;
-            } else if (command.equalsIgnoreCase("list")) {
-                manager.printTasks();
-            } else if (command.equalsIgnoreCase("todo")) {
-                handleTodo(manager, arguments);
-            } else if (command.equalsIgnoreCase("deadline")) {
-                handleDeadline(manager, arguments);
-            } else if (command.equalsIgnoreCase("event")) {
-                handleEvent(manager, arguments);
-            } else if (command.equalsIgnoreCase("mark")) {
-                handleMarking(manager, arguments, true);
-            } else if (command.equalsIgnoreCase("unmark")) {
-                handleMarking(manager, arguments, false);
-            } else {
-                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark)");
+            try {
+                System.out.println("Saving...");
+                manager.save(SAVE_PATH);
+            } catch (IOException e) {
+                System.out.println("Error occurred while saving..." + e);
             }
+
         }
 
     }
