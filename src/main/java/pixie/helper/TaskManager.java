@@ -2,7 +2,6 @@ package pixie.helper;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -134,6 +133,24 @@ public class TaskManager {
         } else {
             for (int i = 0; i < tasks.size(); i++) {
                 this.ui.showResponse("%d. %s\n", i + 1, tasks.get(i));
+            }
+        }
+
+    }
+
+    /**
+     * find all tasks with matching terms
+     */
+    public void filterPrintTasks(String searchTerm) {
+
+        if (tasks.size() == 0) {
+            this.ui.showResponse("<< EMPTY >>");
+        } else {
+            for (int i = 0; i < tasks.size(); i++) {
+                Task task = tasks.get(i);
+                if (task.toString().toLowerCase().contains(searchTerm.toLowerCase())) {
+                    this.ui.showResponse("%d. %s\n", i + 1, task);
+                }
             }
         }
 

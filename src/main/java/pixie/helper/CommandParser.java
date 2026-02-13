@@ -5,6 +5,7 @@ import pixie.command.DeadlineCommand;
 import pixie.command.DeleteCommand;
 import pixie.command.EventCommand;
 import pixie.command.ExitCommand;
+import pixie.command.FindCommand;
 import pixie.command.ListCommand;
 import pixie.command.MarkCommand;
 import pixie.command.TodoCommand;
@@ -31,6 +32,8 @@ public class CommandParser {
             return UnmarkCommand.parse(line);
         } else if (line.startsWith(DeleteCommand.COMMAND_PREFIX)) {
             return DeleteCommand.parse(line);
+        } else if (line.startsWith(FindCommand.COMMAND_PREFIX)) {
+            return FindCommand.parse(line);
         } else {
             throw new CommandParseException("Please enter a valid command!");
         }
