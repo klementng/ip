@@ -33,8 +33,9 @@ public class TaskManager {
      * Retrieves a task at the specified index from the task list.
      *
      * @param index the zero-based index of the task to retrieve
-     * @return the Task object at the specified index, or null if the index is out
-     *         of bounds or the task list is empty
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
     public Task getTask(int index) throws IndexOutOfBoundsException {
         if (this.tasks.size() == 0) {
@@ -61,8 +62,9 @@ public class TaskManager {
      * Marks a task at the specified index as completed.
      * 
      * @param index the zero-based index of the task to mark as completed
-     * @return the task that was marked as completed, or null if the index is
-     *         invalid or the task does not exist
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
     public Task markCompleted(int index) throws IndexOutOfBoundsException {
         Task task = this.getTask(index);
@@ -75,8 +77,9 @@ public class TaskManager {
      * Marks a task at the specified index as incomplete.
      * 
      * @param index the zero-based index of the task to mark as incomplete
-     * @return the task that was marked as incomplete, or null if the index is
-     *         invalid
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
     public Task markIncomplete(int index) throws IndexOutOfBoundsException {
         Task task = this.getTask(index);
