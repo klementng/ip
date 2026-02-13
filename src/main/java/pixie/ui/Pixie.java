@@ -52,8 +52,10 @@ public class Pixie {
                 handleMarking(manager, arguments, true);
             } else if (command.equalsIgnoreCase("unmark")) {
                 handleMarking(manager, arguments, false);
+            } else if (command.equalsIgnoreCase("delete")) {
+                handleDelete(manager, arguments);
             } else {
-                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark)");
+                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark|delete)");
             }
         }
 
@@ -143,4 +145,24 @@ public class Pixie {
             System.out.println(e);
         }
     }
+
+    private static void handleDelete(TaskManager manager, String arguments) {
+        if (arguments == null) {
+            System.out.println("Invalid number of arguments! Expected task index.");
+            return;
+        }
+
+        try {
+            int index = Integer.parseInt(arguments) - 1;
+            Task task = manager.deleteTask(index);
+            System.out.printf("Noted! removed: %s \n", task);
+            System.out.printf("There are/is %d item(s) in the list\n", manager.getTaskCount());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Index entered is not a number!");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
+        }
+    }
+
 }
