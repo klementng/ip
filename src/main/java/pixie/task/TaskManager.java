@@ -1,3 +1,5 @@
+package pixie.task;
+
 import java.util.ArrayList;
 
 /**
@@ -17,19 +19,6 @@ public class TaskManager {
     /**
      * Adds a new task to the task list. Skipped if item is a empty string or null.
      * 
-     * @param item the task description to be added
-     */
-    public void addTodo(String item) {
-        if (item == null || item.length() == 0) {
-            return;
-        }
-
-        this.tasks.add(new Task(item));
-    }
-
-    /**
-     * Adds a new task to the task list. Skipped if item is a empty string or null.
-     * 
      * @param item the task to be added
      */
     public void addTask(Task item) {
@@ -44,16 +33,17 @@ public class TaskManager {
      * Retrieves a task at the specified index from the task list.
      *
      * @param index the zero-based index of the task to retrieve
-     * @return the Task object at the specified index, or null if the index is out
-     *         of bounds or the task list is empty
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
-    public Task getTask(int index) {
+    public Task getTask(int index) throws IndexOutOfBoundsException {
         if (this.tasks.size() == 0) {
-            return null;
+            throw new IndexOutOfBoundsException("The task list is empty");
         }
 
         if (index < 0 || index >= this.tasks.size()) {
-            return null;
+            throw new IndexOutOfBoundsException("Invalid Task index given");
         }
 
         return this.tasks.get(index);
@@ -72,14 +62,12 @@ public class TaskManager {
      * Marks a task at the specified index as completed.
      * 
      * @param index the zero-based index of the task to mark as completed
-     * @return the task that was marked as completed, or null if the index is
-     *         invalid or the task does not exist
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
-    public Task markCompleted(int index) {
+    public Task markCompleted(int index) throws IndexOutOfBoundsException {
         Task task = this.getTask(index);
-        if (task == null) {
-            return null;
-        }
 
         task.markCompleted();
         return task;
@@ -89,14 +77,12 @@ public class TaskManager {
      * Marks a task at the specified index as incomplete.
      * 
      * @param index the zero-based index of the task to mark as incomplete
-     * @return the task that was marked as incomplete, or null if the index is
-     *         invalid
+     * @return the Task object at the specified index
+     * @throws IndexOutOfBoundsException if the index is out of bounds or the task
+     *                                   list is empty
      */
-    public Task markIncomplete(int index) {
+    public Task markIncomplete(int index) throws IndexOutOfBoundsException {
         Task task = this.getTask(index);
-        if (task == null) {
-            return null;
-        }
 
         task.markIncomplete();
         return task;
