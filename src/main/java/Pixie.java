@@ -1,11 +1,16 @@
-import java.util.Arrays;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Pixie {
 
+    private static final Pattern COMMAND_PATTERN = Pattern.compile("(?<cmd>\\S+)(?:\\s+(?<args>.*))?");
+    private static final Pattern DEADLINE_ARGS_PATTERN = Pattern.compile("(?<desc>.+?)\\s+/by\\s+(?<date>.+)");
+    private static final Pattern EVENT_ARGS_PATTERN = Pattern
+            .compile("(?<desc>.+?)\\s+/from\\s+(?<start>.+?)\\s+/to\\s+(?<end>.+)");
+
     public static void main(String[] args) {
         TaskManager manager = new TaskManager();
-
         Scanner stdin = new Scanner(System.in);
 
         System.out.println("Hello! I'm Pixie");
@@ -13,155 +18,121 @@ public class Pixie {
 
         while (true) {
             System.out.print("\n\n>>> ");
+            String input = stdin.nextLine().strip();
 
-            String text = stdin.nextLine().strip();
+            Matcher matcher = COMMAND_PATTERN.matcher(input);
+            if (!matcher.matches()) {
+                System.out.println("Please enter a valid command!");
+                continue;
+            }
 
-            args = text.split(" ");
-            String command = args[0].toLowerCase();
+            String command = matcher.group("cmd").toLowerCase();
+            String arguments = matcher.group("args");
 
-            if (command.equals("bye")) {
+            if (command.equalsIgnoreCase("bye")) {
                 System.out.println("Bye. Hope to see you again soon!");
-                break;
-            } else if (command.equals("todo")) {
-                if (args.length < 2) {
-                    System.out.println("Invalid number of arguments! Minimum 2 expected");
-                    continue;
-                }
-                Task item = new Todo(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-                manager.addTask(item);
-                System.out.printf("Got it! added: %s \n", item);
-                System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
-
-            } else if (command.equals("event")) {
-                if (args.length < 5) {
-                    System.out.println("Invalid number of arguments! Minimum 5 expected");
-                    continue;
-                }
-
-                String desc = "";
-                String to = "";
-                String from = "";
-
-                int parseType = 0;
-
-                for (int i = 1; i < args.length; i++) {
-                    if (args[i].equalsIgnoreCase("/from")) {
-                        parseType = 1;
-                        continue;
-                    }
-
-                    if (args[i].equalsIgnoreCase("/to")) {
-                        parseType = 2;
-                        continue;
-                    }
-
-                    if (parseType == 0) {
-                        desc += args[i];
-                    } else if (parseType == 1) {
-                        from += args[i];
-                    } else {
-                        to += args[i];
-                    }
-
-                }
-
-                if (to.equals("") || from.equals("")) {
-                    System.out.println("Invalid format given");
-                    continue;
-                }
-
-                Task item = new Event(desc, from, to);
-                manager.addTask(item);
-                System.out.printf("Got it! added: %s \n", item);
-                System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
-
-            } else if (command.equals("deadline")) {
-                if (args.length < 4) {
-                    System.out.println("Invalid number of arguments! Minimum 4 expected");
-                    continue;
-                }
-
-                String desc = "";
-                String dueDate = "";
-
-                int parseType = 0;
-
-                for (int i = 1; i < args.length; i++) {
-                    if (args[i].equalsIgnoreCase("/by")) {
-                        parseType = 1;
-                        continue;
-                    }
-
-                    if (parseType == 0) {
-                        desc += args[i];
-                    } else {
-                        dueDate += args[i];
-                    }
-
-                }
-
-                if (dueDate.equals("")) {
-                    System.out.println("Invalid format given");
-                    continue;
-                }
-
-                Task item = new Deadline(desc, dueDate);
-                manager.addTask(item);
-                System.out.printf("Got it! added: %s \n", item);
-                System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
-
-            } else if (command.equals("list")) {
+                return;
+            } else if (command.equalsIgnoreCase("list")) {
                 manager.printTasks();
+            } else if (command.equalsIgnoreCase("todo")) {
+                handleTodo(manager, arguments);
+            } else if (command.equalsIgnoreCase("deadline")) {
+                handleDeadline(manager, arguments);
+            } else if (command.equalsIgnoreCase("event")) {
+                handleEvent(manager, arguments);
+            } else if (command.equalsIgnoreCase("mark")) {
+                handleMarking(manager, arguments, true);
+            } else if (command.equalsIgnoreCase("unmark")) {
+                handleMarking(manager, arguments, false);
+            } else {
+                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark)");
+            }
+        }
 
-            } else if (command.equals("mark")) {
-                if (args.length != 2) {
-                    System.out.println("Invalid number of arguments! Expected 2");
-                    continue;
-                }
-                int index;
-                Task task;
+    }
 
-                try {
-                    index = Integer.parseInt(args[1]) - 1;
-                } catch (NumberFormatException e) {
-                    System.out.println("Index entered is not a number!");
-                    continue;
-                }
+    private static void handleEvent(TaskManager manager, String arguments) {
+        if (arguments == null) {
+            System.out.println("Invalid number of arguments! Expected: event <desc> /from <start> /to <end>");
+            return;
+        }
+
+        Matcher matcher = EVENT_ARGS_PATTERN.matcher(arguments);
+        if (!matcher.matches()) {
+            System.out.println("Invalid format given. Expected: event <desc> /from <start> /to <end>");
+            return;
+        }
+
+        String desc = matcher.group("desc");
+        String from = matcher.group("start");
+        String to = matcher.group("end");
+
+        Task item = new Event(desc, from, to);
+        manager.addTask(item);
+
+        System.out.printf("Got it! added: %s \n", item);
+        System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
+    }
+
+    private static void handleDeadline(TaskManager manager, String arguments) {
+        if (arguments == null) {
+            System.out.println("Invalid number of arguments! Expected: deadline <desc> /by <date>");
+            return;
+        }
+
+        Matcher matcher = DEADLINE_ARGS_PATTERN.matcher(arguments);
+
+        if (!matcher.matches()) {
+            System.out.println("Invalid format given. Expected: deadline <desc> /by <date>");
+            return;
+        }
+
+        String desc = matcher.group("desc");
+        String by = matcher.group("date");
+
+        Task item = new Deadline(desc, by);
+        manager.addTask(item);
+        System.out.printf("Got it! added: %s \n", item);
+        System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
+    }
+
+    private static void handleTodo(TaskManager manager, String arguments) {
+        if (arguments == null || arguments.isBlank()) {
+            System.out.println("Invalid number of arguments! Expected: todo <desc>");
+            return;
+        }
+
+        Task item = new Todo(arguments);
+        manager.addTask(item);
+        System.out.printf("Got it! added: %s \n", item);
+        System.out.printf("There are/is %d item(s) in the list", manager.getTaskCount());
+
+    }
+
+    private static void handleMarking(TaskManager manager, String arguments, boolean isCompleted) {
+        if (arguments == null) {
+            System.out.println("Invalid number of arguments! Expected task index.");
+            return;
+        }
+
+        try {
+            int index = Integer.parseInt(arguments) - 1;
+            Task task;
+
+            if (isCompleted) {
                 task = manager.markCompleted(index);
-
-                if (task == null) {
-                    System.out.println("Invalid Task Number entered!");
-                    continue;
-                }
                 System.out.printf("Nice! I've marked this task as done: %s\n", task);
 
-            } else if (command.equals("unmark")) {
-
-                if (args.length != 2) {
-                    System.out.println("Invalid number of arguments! Expected 2");
-                    continue;
-                }
-                int index;
-                Task task;
-
-                try {
-                    index = Integer.parseInt(args[1]) - 1;
-                } catch (NumberFormatException e) {
-                    System.out.println("Index entered is not a number!");
-                    continue;
-                }
-                task = manager.markIncomplete(index);
-
-                if (task == null) {
-                    System.out.println("Invalid Task Number entered!");
-                    continue;
-                }
+            } else {
+                task = manager.markCompleted(index);
                 System.out.printf("OK, I've marked this task as not done yet: %s\n", task);
+
             }
 
-            else {
-                System.out.printf("Please enter a valid command!");
-            }
+        } catch (NumberFormatException e) {
+            System.out.println("Index entered is not a number!");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
         }
     }
 }
