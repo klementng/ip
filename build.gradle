@@ -28,7 +28,7 @@ test {
 }
 
 application {
-    mainClass.set("pixie.ui.Pixie")
+    mainClass.set("pixie.Pixie")
 }
 
 shadowJar {
