@@ -1,6 +1,14 @@
+package pixie.ui;
+
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import pixie.task.Deadline;
+import pixie.task.Event;
+import pixie.task.Task;
+import pixie.task.TaskManager;
+import pixie.task.Todo;
 
 public class Pixie {
 

@@ -1,3 +1,5 @@
+package pixie.task;
+
 /**
  * Represents a task with a description and completion status. A task can be
  * marked as completed or incomplete, and provides a string representation
