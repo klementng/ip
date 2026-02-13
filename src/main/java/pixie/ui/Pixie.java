@@ -44,6 +44,8 @@ public class Pixie {
                 manager.printTasks();
             } else if (command.equalsIgnoreCase("todo")) {
                 handleTodo(manager, arguments);
+            } else if (command.equalsIgnoreCase("delete")) {
+                handleDelete(manager, arguments);
             } else if (command.equalsIgnoreCase("deadline")) {
                 handleDeadline(manager, arguments);
             } else if (command.equalsIgnoreCase("event")) {
@@ -55,7 +57,7 @@ public class Pixie {
             } else if (command.equalsIgnoreCase("delete")) {
                 handleDelete(manager, arguments);
             } else {
-                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark|delete)");
+                System.out.println("Please enter a valid command! (list|todo|deadline|event|mark|unmark|delete|bye)");
             }
         }
 
