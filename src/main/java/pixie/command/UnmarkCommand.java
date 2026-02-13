@@ -22,7 +22,7 @@ public class UnmarkCommand extends Command {
     public void execute(TaskManager manager, Ui ui) {
         try {
             Task task = manager.markCompleted(this.index);
-            ui.showResponse("Nice! I've marked this task as done: %s\n", task);
+            ui.showResponse("Nice! I've marked this task not done: %s\n", task);
         } catch (IndexOutOfBoundsException e) {
             ui.showErrorMessage(e.getMessage());
         }
