@@ -21,7 +21,7 @@ public class UnmarkCommand extends Command {
     @Override
     public void execute(TaskManager manager, Ui ui) {
         try {
-            Task task = manager.markCompleted(this.index);
+            Task task = manager.markIncomplete(this.index);
             ui.showResponse("Nice! I've marked this task not done: %s\n", task);
         } catch (IndexOutOfBoundsException e) {
             ui.showErrorMessage(e.getMessage());
