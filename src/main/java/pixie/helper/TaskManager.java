@@ -10,19 +10,23 @@ import java.util.Scanner;
 
 import pixie.exceptions.TaskDeserializationException;
 import pixie.task.Task;
+import pixie.ui.Ui;
 
 /**
  * A task manager that maintains a list of tasks
  */
 public class TaskManager {
-
+    private Ui ui;
+    private Path filePath;
     private ArrayList<Task> tasks;
 
     /**
      * Constructs a new TaskManager with an empty task list.
      */
-    public TaskManager() {
+    public TaskManager(Ui ui, Path filePath) {
         this.tasks = new ArrayList<>();
+        this.filePath = filePath;
+        this.ui = ui;
     }
 
     /**
@@ -126,55 +130,59 @@ public class TaskManager {
     public void printTasks() {
 
         if (tasks.size() == 0) {
-            System.out.println("<< EMPTY >>");
+            this.ui.showResponse("<< EMPTY >>");
         } else {
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.printf("%d. %s\n", i + 1, tasks.get(i));
+                this.ui.showResponse("%d. %s\n", i + 1, tasks.get(i));
             }
-
         }
 
     }
 
     /**
      * Saves the current list of tasks to a file.
-     *
-     * @param filePath The path to the file.
-     * @throws IOException If the file cannot be written to.
      */
-    public void save(Path filePath) throws IOException {
-        Files.createDirectories(filePath.getParent());
+    public void save() {
+        try {
+            Files.createDirectories(this.filePath.getParent());
 
-        FileWriter fw = new FileWriter(filePath.toString());
-        for (Task task : tasks) {
-            fw.write(task.toCSV() + "\n");
+            FileWriter fw = new FileWriter(this.filePath.toString());
+            for (Task task : tasks) {
+                fw.write(task.toCSV() + "\n");
+            }
+            fw.close();
+
+        } catch (Exception e) {
+            this.ui.showErrorMessage(e.getMessage());
         }
-        fw.close();
+
     }
 
     /**
      * Loads tasks from a file into the task list.
      *
-     * @param filePath The path to the file.
-     * @throws IOException If the file cannot be read.
      */
-    public void load(Path filePath) throws IOException {
-        File f = new File(filePath.toString());
+    public void load() {
+        try {
+            File f = new File(this.filePath.toString());
 
-        if (!f.exists())
-            return;
+            if (!f.exists())
+                return;
 
-        Scanner s = new Scanner(f);
-        while (s.hasNext()) {
-            String line = s.nextLine();
-            try {
-                Task task = Task.fromCSV(line);
-                this.tasks.add(task);
+            Scanner s = new Scanner(f);
+            while (s.hasNext()) {
+                String line = s.nextLine();
+                try {
+                    Task task = Task.fromCSV(line);
+                    this.tasks.add(task);
 
-            } catch (TaskDeserializationException e) {
-                System.err.println("Skipping corrupted line: " + line);
+                } catch (TaskDeserializationException e) {
+                    this.ui.showErrorMessage("Skipping corrupted line: " + line);
+                }
             }
+            s.close();
+        } catch (Exception e) {
+            this.ui.showErrorMessage(e.getMessage());
         }
-        s.close();
     }
 }
