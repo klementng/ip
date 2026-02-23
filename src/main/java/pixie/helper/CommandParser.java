@@ -14,6 +14,14 @@ import pixie.exceptions.CommandParseException;
 
 public class CommandParser {
 
+    /**
+     * Parses a command string and returns the corresponding Command object.
+     *
+     * @param line the input string to be parsed
+     * @return a Command object corresponding to the input string
+     * @throws CommandParseException if the input string does not start with a valid
+     *                               command prefix
+     */
     public Command parse(String line) throws CommandParseException {
 
         if (line.startsWith(ExitCommand.COMMAND_PREFIX)) {
