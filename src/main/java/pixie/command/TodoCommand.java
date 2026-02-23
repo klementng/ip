@@ -21,7 +21,11 @@ public class TodoCommand extends Command {
     @Override
     public void execute(TaskManager manager, Ui ui) {
         Task item = new Todo(description);
+
         manager.addTask(item);
+        ui.showResponse("Got it! added: %s \n", item);
+        ui.showResponse("There are/is %d item(s) in the list", manager.getTaskCount());
+
     }
 
     public static TodoCommand parse(String line) throws CommandParseException {
